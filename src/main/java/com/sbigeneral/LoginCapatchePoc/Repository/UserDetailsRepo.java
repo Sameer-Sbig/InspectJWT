@@ -23,7 +23,7 @@ public interface UserDetailsRepo extends JpaRepository<UserDetails,Integer > {
 	 * ) public UserDetails checkLogin(@Param("userModel") UserModel userEntered);
 	 */
 
-	@Query("SELECT u FROM UserDetails u WHERE u.employeeId = :employeeId AND u.password = :password")
+	@Query("SELECT u FROM UserDetails u WHERE u.employeeId = :employeeId  AND u.password = :password")
 	public UserDetails checkLogin(@Param("employeeId") String employeeId, @Param("password") String password);
 
 	 

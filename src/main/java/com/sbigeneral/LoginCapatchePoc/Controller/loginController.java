@@ -77,6 +77,7 @@ import com.sbigeneral.LoginCapatchePoc.Entity.SearchbyPinDetails;
 import com.sbigeneral.LoginCapatchePoc.Entity.UploadImage;
 import com.sbigeneral.LoginCapatchePoc.Entity.User;
 import com.sbigeneral.LoginCapatchePoc.Entity.UserDetails;
+import com.sbigeneral.LoginCapatchePoc.Service.ApiService;
 import com.sbigeneral.LoginCapatchePoc.Service.UserDetailsService;
 import com.sbigeneral.LoginCapatchePoc.Service.UserService;
 import com.sbigeneral.LoginCapatchePoc.Utill.CaptchaUtils;
@@ -113,6 +114,8 @@ public class loginController {
 	private UserSessionService userSessionService;
 	@Autowired
 	private GCMUtilty gcmUtility;
+	@Autowired
+	private ApiService apiService;
 	private static RestTemplate restTemplate = new RestTemplate();
 
 	@Autowired
@@ -430,45 +433,10 @@ public class loginController {
 	public ResponseEntity<?> getReport(@RequestBody UserDetails user) {
 		logger.info("Fetching login details for PIN getReport method username: {}", user);
 
-		try {
-      	String employeeId = user.getEmployeeId();
-			String API_URL = "https://uat-dil.sbigen.in/services/PINModule/fetchPINDetails/v1";
-			String decision = "Extra KM Requested|Extra KM Approved|Case Recommend|Case Reject";
-
-			String encodedDecision = URLEncoder.encode(decision, "UTF-8");
-			String apiUrl = API_URL + "?VendorCode=" + employeeId + "&Decision=" + encodedDecision;
-
-//		       String apiUrl = "https://uat-dil.sbigen.in/services/PINModule/fetchPINDetails/v1?VendorCode=V003&Decision=Extra%20KM%20Requested|Extra%20KM%20Approved|Case%20Recommend|Case%20Reject";
-			logger.info("API URL: {}", apiUrl);
-			System.out.println(apiUrl);
-
-			//URL url = new URL(apiUrl);
-			URL url = new URL(apiUrl);
-			HttpURLConnection con = (HttpURLConnection) url.openConnection();
-			con.setRequestMethod("GET");
-
-			int responseCode = con.getResponseCode();
-			if (responseCode == HttpURLConnection.HTTP_OK) {
-				BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
-				String inputLine;
-				StringBuilder response = new StringBuilder();
-
-				while ((inputLine = in.readLine()) != null) {
-					response.append(inputLine);
-				}
-				in.close();
-
-				logger.debug("Response Body: {}", response.toString());
-				return ResponseEntity.ok(response.toString());
-			} else {
-				logger.error("Failed to fetch report. Response Code: {}", responseCode);
-				return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to fetch report");
-			}
-
-		} catch (Exception e) {
-			logger.error("Error in PIN survey getReport: {}", e.getMessage());
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to fetch report");
-		}
+		String employeeId = user.getEmployeeId();
+		
+		ResponseEntity<String> response = apiService.getReport(employeeId);
+		return response;
 	}
 
 	
@@ -476,22 +444,9 @@ public class loginController {
 	public ResponseEntity<?> getPinDetails(@RequestBody SearchbyPinDetails pinDetails) {
 		System.out.println(pinDetails);
 		String pinNumber = pinDetails.getPinNumber();
-		logger.info("Response of getByPinDetails method in PIN details {}", pinDetails.getPinNumber());
-		System.out.println(pinNumber);
-		HttpHeaders headers = new HttpHeaders();
-		headers.setContentType(MediaType.APPLICATION_JSON);
-		Class<Map<String, List<PinDetails>>> responseType = (Class<Map<String, List<PinDetails>>>) (Class<?>) Map.class;
 
-		String apiUrl = "https://uat-dil.sbigen.in:443/services/PINModule/fetchPINDetails/v1?PINNumber=" + pinNumber;
-		System.out.println(apiUrl);
-
-		ResponseEntity<Map<String, List<PinDetails>>> responseEntity = restTemplate.exchange(apiUrl, HttpMethod.GET,
-				null, responseType);
-		System.out.println(responseEntity.getBody());
-		logger.info("Response of getByPinDetails method in PIN details {}", responseEntity.getBody());
-
-		return responseEntity.ok(responseEntity.getBody());
-
+		ResponseEntity<Map<String, List<PinDetails>>> response =apiService.getByPinDetails(pinNumber);
+		return response;
 	}
 
 
