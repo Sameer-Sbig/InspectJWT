@@ -1,10 +1,13 @@
 package com.sbigeneral.LoginCapatchePoc.ServiceImpl;
 
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.List;
 import java.util.Map;
 
@@ -93,5 +96,18 @@ public class ApiServiceImpl implements ApiService {
 		return responseEntity.ok(responseEntity.getBody());
 
     }
+
+	@Override
+	public String getLoginImage() {
+		String loginPage = "";
+			try {
+			loginPage = new String(Files.readAllBytes(Paths.get("D:/SpringBootProjects/PSH/PSHBackend/src/main/resources/static/login.txt")));
+			System.out.println(loginPage);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return loginPage;
+	}
     
 }

@@ -13,4 +13,5 @@ public interface ApiService {
     public ResponseEntity<String>  getReport(String employeeId);
 
     public ResponseEntity<Map<String, List<PinDetails>>> getByPinDetails(String pinNumber);
+    public String getLoginImage();
 }
