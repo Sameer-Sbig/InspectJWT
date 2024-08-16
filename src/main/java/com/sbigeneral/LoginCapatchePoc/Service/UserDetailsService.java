@@ -16,4 +16,6 @@ public interface UserDetailsService {
 	
 	public UserDetails login(UserModel user);
 
+	public void logout(String employeeId);
+
 }

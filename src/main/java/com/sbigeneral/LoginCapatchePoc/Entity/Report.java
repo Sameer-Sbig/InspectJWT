@@ -19,7 +19,7 @@ public class Report {
 
     @Column(name = "pinnumber")
     private String pinNumber;
-
+    
     @Column(name = "transactionid")
     private String transactionId;
 

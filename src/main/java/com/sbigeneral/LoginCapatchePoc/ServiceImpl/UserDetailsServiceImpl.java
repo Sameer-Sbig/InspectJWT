@@ -24,11 +24,47 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 		
 		return byEmployeeId;
 	}
+	
+//	
 	@Override
 	public UserDetails login(UserModel user) {
 		// TODO Auto-generated method stub
 		UserDetails checkLogin = userDetailsRepo.checkLogin(user.getEmployeeId() , user.getPassword());
 		return checkLogin ;
 	}
+	
+	
+	
+	
+///////////////////////////////// login page with simultaneously login api /////////////////////////////	
+//	public UserDetails login(UserModel user) {
+//        UserDetails existingUser = userDetailsRepo.checkLogin(user.getEmployeeId(), user.getPassword());
+//        System.out.println("Existing user = " + existingUser);
+//
+//        if (existingUser == null) {
+//            // Handle invalid credentials
+//            return null;
+//        }
+//
+//        if (existingUser.isLoggedIn()) {
+//            // Handle already logged-in user
+//            throw new RuntimeException("User is already logged in from another session.");
+//        }
+//
+//        // Update login status
+//        existingUser.setLoggedIn(true);
+//        userDetailsRepo.save(existingUser);
+//
+//        return existingUser;
+//    }
+
+    public void logout(String employeeId) {
+        UserDetails existingUser = userDetailsRepo.findByEmployeeId(employeeId);
+
+        if (existingUser != null) {
+            existingUser.setLoggedIn(false);
+            userDetailsRepo.save(existingUser);
+        }
+    }
 
 }

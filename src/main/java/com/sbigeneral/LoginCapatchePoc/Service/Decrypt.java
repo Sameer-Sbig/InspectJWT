@@ -6,6 +6,6 @@ import org.springframework.stereotype.Service;
 public interface Decrypt {
 	
 	
-	 String decrypt(String encryptedData) throws Exception;
+	 String decrypt(String encryptedData, String base64Iv, String base64Key) throws Exception;
 
 }

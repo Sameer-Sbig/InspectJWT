@@ -24,6 +24,10 @@ public class UserDetails {
 	
 	@Column(name="MOBILENUMBER")
 	private String mobileNumber;
+	
+
+    @Column(name = "IS_LOGGED_IN")
+	 private boolean isLoggedIn;
 
 	public int getId() {
 		return id;
@@ -73,26 +77,20 @@ public class UserDetails {
 		this.mobileNumber = mobileNumber;
 	}
 
-	public UserDetails() {
-		super();
-		// TODO Auto-generated constructor stub
+	public boolean isLoggedIn() {
+		return isLoggedIn;
 	}
 
-	public UserDetails(int id, String name, String employeeId, String emailId, String password, String mobileNumber) {
-		super();
-		this.id = id;
-		this.name = name;
-		this.employeeId = employeeId;
-		this.emailId = emailId;
-		this.password = password;
-		this.mobileNumber = mobileNumber;
+	public void setLoggedIn(boolean isLoggedIn) {
+		this.isLoggedIn = isLoggedIn;
 	}
 
 	@Override
 	public String toString() {
 		return "UserDetails [id=" + id + ", name=" + name + ", employeeId=" + employeeId + ", emailId=" + emailId
-				+ ", password=" + password + ", mobileNumber=" + mobileNumber + "]";
+				+ ", password=" + password + ", mobileNumber=" + mobileNumber + ", isLoggedin=" + isLoggedIn + "]";
 	}
+
 	
 	
 	

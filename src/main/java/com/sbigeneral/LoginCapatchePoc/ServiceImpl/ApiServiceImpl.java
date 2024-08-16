@@ -101,7 +101,7 @@ public class ApiServiceImpl implements ApiService {
 	public String getLoginImage() {
 		String loginPage = "";
 			try {
-			loginPage = new String(Files.readAllBytes(Paths.get("D:/SpringBootProjects/PSH/PSHBackend/src/main/resources/static/login.txt")));
+			loginPage = new String(Files.readAllBytes(Paths.get("/u02/Oracle/Middleware/Oracle_Home/user_projects/domains/base_domain/login.txt")));
 			System.out.println(loginPage);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
