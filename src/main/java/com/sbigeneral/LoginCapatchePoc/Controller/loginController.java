@@ -441,7 +441,7 @@ public class loginController {
 		try {
 			// Decrypt the payload
 			String decryptedPayload = decryptService.decrypt(encryptedText, base64Iv, base64Key);
-			System.out.println("Decrypted Payload: " + decryptedPayload);
+			System.out.println("Decrypted Payload from logout: " + decryptedPayload);
 	
 			// Convert the decrypted JSON string to UserModel
 			UserModel user = objectMapper.readValue(decryptedPayload, UserModel.class);
@@ -517,37 +517,7 @@ public class loginController {
 //	    return response;
 //	}
 
-	@CrossOrigin
-	@PostMapping("/logout")
-	public ResponseEntity<?> logout(@RequestBody Map<String, String> payload) {
-		String encryptedText = payload.get("encryptedText");
-		String base64Iv = payload.get("base64iv");
-		String base64Key = payload.get("key");
-
-		ResponseEntity<?> response;
-		try {
-			// Decrypt the payload to get the employeeId
-			String decryptedPayload = decryptService.decrypt(encryptedText, base64Iv, base64Key);
-			ObjectMapper objectMapper = new ObjectMapper();
-			Map<String, String> decryptedData = objectMapper.readValue(decryptedPayload, Map.class);
-			String employeeId = decryptedData.get("employeeId");
-
-			// Perform logout
-			userDetailsService.logout(employeeId);
-
-			// Create response message
-			Map<String, String> responseMessage = new HashMap<>();
-			responseMessage.put("message", "Logged out successfully");
-
-			// Encrypt the response
-			String encryptedResponse = encrypt.encrypt(responseMessage, base64Key, base64Iv);
-			response = new ResponseEntity<>(encryptedResponse, HttpStatus.OK);
-		} catch (Exception e) {
-			e.printStackTrace();
-			response = new ResponseEntity<>("Internal Server Error", HttpStatus.INTERNAL_SERVER_ERROR);
-		}
-		return response;
-	}
+	
 
 	@CrossOrigin
 	@PostMapping("/getReport")
