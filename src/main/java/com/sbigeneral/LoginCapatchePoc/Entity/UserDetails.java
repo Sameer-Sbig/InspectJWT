@@ -25,8 +25,19 @@ public class UserDetails {
 	@Column(name="MOBILENUMBER")
 	private String mobileNumber;
 	
+	
+	@Column(name="SESSIONCOUNT")
+	private Integer sessionCount = 0;
 
-    @Column(name = "IS_LOGGED_IN")
+    public Integer getSessionCount() {
+		return sessionCount;
+	}
+
+	public void setSessionCount(Integer sessionCount) {
+		this.sessionCount = sessionCount;
+	}
+
+	@Column(name = "IS_LOGGED_IN")
 	 private boolean isLoggedIn;
 
 	public int getId() {
@@ -88,8 +99,10 @@ public class UserDetails {
 	@Override
 	public String toString() {
 		return "UserDetails [id=" + id + ", name=" + name + ", employeeId=" + employeeId + ", emailId=" + emailId
-				+ ", password=" + password + ", mobileNumber=" + mobileNumber + ", isLoggedin=" + isLoggedIn + "]";
+				+ ", password=" + password + ", mobileNumber=" + mobileNumber + ", sessionCount=" + sessionCount
+				+ ", isLoggedIn=" + isLoggedIn + "]";
 	}
+
 
 	
 	

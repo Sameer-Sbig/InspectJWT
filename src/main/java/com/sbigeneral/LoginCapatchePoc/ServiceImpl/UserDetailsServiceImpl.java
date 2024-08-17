@@ -1,6 +1,9 @@
 package com.sbigeneral.LoginCapatchePoc.ServiceImpl;
 
+import java.util.ArrayList;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import com.sbigeneral.LoginCapatchePoc.Entity.UserDetails;
@@ -30,8 +33,31 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 	public UserDetails login(UserModel user) {
 		// TODO Auto-generated method stub
 		UserDetails checkLogin = userDetailsRepo.checkLogin(user.getEmployeeId() , user.getPassword());
+		
+		System.out.println("the session count is"  + checkLogin.getSessionCount());
+		// new code
+		if(checkLogin.getSessionCount() > 0) {
+			throw new IllegalStateException("User is already logged in from other session")	;
+			
+			
+		}
+		
+		  checkLogin.setSessionCount(1);
+		  userDetailsRepo.save(checkLogin);
+		  
+		  System.out.println("the session count is"  + checkLogin.getSessionCount());
 		return checkLogin ;
 	}
+	
+    public void logout(String employeeId) {
+        UserDetails existingUser = userDetailsRepo.findByEmployeeId(employeeId);
+
+        if (existingUser != null) {
+            existingUser.setSessionCount(0);
+            userDetailsRepo.save(existingUser);
+        }
+    }
+	
 	
 	
 	
@@ -57,14 +83,17 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 //
 //        return existingUser;
 //    }
+//
+//    public void logout(String employeeId) {
+//        UserDetails existingUser = userDetailsRepo.findByEmployeeId(employeeId);
+//
+//        if (existingUser != null) {
+//            existingUser.setLoggedIn(false);
+//            userDetailsRepo.save(existingUser);
+//        }
+//    }
 
-    public void logout(String employeeId) {
-        UserDetails existingUser = userDetailsRepo.findByEmployeeId(employeeId);
-
-        if (existingUser != null) {
-            existingUser.setLoggedIn(false);
-            userDetailsRepo.save(existingUser);
-        }
-    }
+    
+    // new code 
 
 }

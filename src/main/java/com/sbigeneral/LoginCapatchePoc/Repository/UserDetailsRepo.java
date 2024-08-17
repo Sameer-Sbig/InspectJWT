@@ -1,5 +1,7 @@
 package com.sbigeneral.LoginCapatchePoc.Repository;
 
+import java.util.Optional;
+
 import javax.transaction.Transactional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -33,6 +35,9 @@ public interface UserDetailsRepo extends JpaRepository<UserDetails,Integer > {
 	    @Modifying
 	    @Transactional
 	    void logout(@Param("employeeId") String employeeId);
+	   
+	   // new code
+//	 Optional<UserDetails> findByUsername(String employeeId);
 
 	 
 }

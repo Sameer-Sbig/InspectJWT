@@ -26,6 +26,7 @@ import java.util.Optional;
 import java.util.Set;
 
 import javax.annotation.PostConstruct;
+import javax.naming.AuthenticationException;
 import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManager;
@@ -47,7 +48,9 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationServiceException;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.session.SessionInformation;
@@ -84,13 +87,16 @@ import com.sbigeneral.LoginCapatchePoc.Service.Decrypt;
 import com.sbigeneral.LoginCapatchePoc.Service.Encrypt;
 import com.sbigeneral.LoginCapatchePoc.Service.UserDetailsService;
 import com.sbigeneral.LoginCapatchePoc.Service.UserService;
+//import com.sbigeneral.LoginCapatchePoc.ServiceImpl.CustomUserDetailsService;
 import com.sbigeneral.LoginCapatchePoc.Utill.CaptchaUtils;
 import com.sbigeneral.LoginCapatchePoc.Utill.EmailSender;
 import com.sbigeneral.LoginCapatchePoc.Utill.GCMUtilty;
+import com.sbigeneral.LoginCapatchePoc.Utill.JwtUtil;
 import com.sbigeneral.LoginCapatchePoc.Utill.UserSessionService;
 import com.sbigeneral.LoginCapatchePoc.config.WebLogicConfig;
 import com.sbigeneral.LoginCapatchePoc.model.ChangePasswordRequest;
 import com.sbigeneral.LoginCapatchePoc.model.ExtraKmModel;
+import com.sbigeneral.LoginCapatchePoc.model.JwtResponse;
 import com.sbigeneral.LoginCapatchePoc.model.UserModel;
 
 import cn.apiclub.captcha.Captcha;
@@ -131,12 +137,18 @@ public class loginController {
 	Decrypt decryptService;
 	@Autowired
 	ObjectMapper objectMapper;
-    @Autowired
-    private Encrypt encrypt;
+	@Autowired
+	private Encrypt encrypt;
 
 	private String loginPageImage;
-	
-	
+
+//	@Autowired
+//	private AuthenticationManager authenticationManager;
+//	@Autowired
+//	private JwtUtil jwtUtil;
+//	@Autowired
+//	private CustomUserDetailsService userDetailsService1;
+
 	@Autowired
 	UserDetailsRepo userDetailsRepo;
 
@@ -326,8 +338,6 @@ public class loginController {
 
 	/// ***************************************Sameer Code
 	/// ************************************////////////////////////////////////
-	
-	
 
 	@CrossOrigin
 	@PostMapping("/getByemployeeId")
@@ -356,7 +366,7 @@ public class loginController {
 	@PostMapping("/loginpage")
 	public ResponseEntity<?> login(@RequestBody UserModel user) {
 		logger.info("Fetching login details for PIN username: {}", user);
-		
+
 		ResponseEntity<?> response = null;
 		try {
 			UserDetails loggedInUser = userDetailsService.login(user);
@@ -365,10 +375,9 @@ public class loginController {
 				Map<String, String> employee = new HashMap<String, String>();
 				employee.put("vendorCode", loggedInUser.getEmployeeId());
 				employee.put("name", loggedInUser.getName());
-				
-				
+
 //		            response = new ResponseEntity<>(encryptedResponse, HttpStatus.OK);
-				
+
 				response = new ResponseEntity<Map<String, String>>(employee, HttpStatus.OK);
 			} else {
 				response = new ResponseEntity<String>("User does not exist", HttpStatus.NOT_FOUND);
@@ -383,49 +392,47 @@ public class loginController {
 		return response;
 
 	}
-	
+
 	@CrossOrigin
 	@PostMapping("/loginpage1")
 	public ResponseEntity<?> login(@RequestBody Map<String, String> payload) {
-	    logger.info("Received encrypted request body");
+		logger.info("Received encrypted request body");
 
-	    String encryptedText = payload.get("encryptedText");
-	    String base64Iv = payload.get("base64iv");
-	    String base64Key = payload.get("key");
+		String encryptedText = payload.get("encryptedText");
+		String base64Iv = payload.get("base64iv");
+		String base64Key = payload.get("key");
 
-	    ResponseEntity<?> response;
-	    try {
-	        // Decrypt the payload
-	        String decryptedPayload = decryptService.decrypt(encryptedText, base64Iv, base64Key);
-	        System.out.println("Decrypted Payload: " + decryptedPayload);
+		ResponseEntity<?> response;
+		try {
+			// Decrypt the payload
+			String decryptedPayload = decryptService.decrypt(encryptedText, base64Iv, base64Key);
+			System.out.println("Decrypted Payload: " + decryptedPayload);
 
-	        // Convert the decrypted JSON string to UserModel
-	        UserModel user = objectMapper.readValue(decryptedPayload, UserModel.class);
+			// Convert the decrypted JSON string to UserModel
+			UserModel user = objectMapper.readValue(decryptedPayload, UserModel.class);
 
-	        // Process the decrypted user data
-	        UserDetails loggedInUser = userDetailsService.login(user);
-	        if (loggedInUser != null) {
-	            Map<String, String> employee = new HashMap<>();
-	            employee.put("vendorCode", loggedInUser.getEmployeeId());
-	            employee.put("name", loggedInUser.getName());
-	            
-	            	
-	            String encryptedResponse = encrypt.encrypt(employee, base64Key, base64Iv);
-	            response = new ResponseEntity<>(encryptedResponse, HttpStatus.OK);
-	        } else {
-	            response = new ResponseEntity<>("User does not exist", HttpStatus.NOT_FOUND);
-	        }
-	    } catch (Exception e) {
-	        e.printStackTrace();
-	        response = new ResponseEntity<>("Internal Server Error", HttpStatus.INTERNAL_SERVER_ERROR);
-	    }
-	    return response;
+			// Process the decrypted user data
+			UserDetails loggedInUser = userDetailsService.login(user);
+			if (loggedInUser != null) {
+				Map<String, String> employee = new HashMap<>();
+				employee.put("vendorCode", loggedInUser.getEmployeeId());
+				employee.put("name", loggedInUser.getName());
+
+				String encryptedResponse = encrypt.encrypt(employee, base64Key, base64Iv);
+				response = new ResponseEntity<>(encryptedResponse, HttpStatus.OK);
+			} else {
+				response = new ResponseEntity<>("User does not exist", HttpStatus.NOT_FOUND);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			response = new ResponseEntity<>("Internal Server Error", HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+		return response;
 	}
+	
+	
 
-	
-	
-///////////////////////////////// login page with simultaneously login api /////////////////////////////	
-	
+
 //	@CrossOrigin
 //	@PostMapping("/loginpage1")
 //	public ResponseEntity<?> login(@RequestBody Map<String, String> payload) {
@@ -478,42 +485,37 @@ public class loginController {
 //	}
 
 	@CrossOrigin
-    @PostMapping("/logout")
-    public ResponseEntity<?> logout(@RequestBody Map<String, String> payload) {
-        String encryptedText = payload.get("encryptedText");
-        String base64Iv = payload.get("base64iv");
-        String base64Key = payload.get("key");
+	@PostMapping("/logout")
+	public ResponseEntity<?> logout(@RequestBody Map<String, String> payload) {
+		String encryptedText = payload.get("encryptedText");
+		String base64Iv = payload.get("base64iv");
+		String base64Key = payload.get("key");
 
-        ResponseEntity<?> response;
-        try {
-            // Decrypt the payload to get the employeeId
-            String decryptedPayload = decryptService.decrypt(encryptedText, base64Iv, base64Key);
-            ObjectMapper objectMapper = new ObjectMapper();
-            Map<String, String> decryptedData = objectMapper.readValue(decryptedPayload, Map.class);
-            String employeeId = decryptedData.get("employeeId");
+		ResponseEntity<?> response;
+		try {
+			// Decrypt the payload to get the employeeId
+			String decryptedPayload = decryptService.decrypt(encryptedText, base64Iv, base64Key);
+			ObjectMapper objectMapper = new ObjectMapper();
+			Map<String, String> decryptedData = objectMapper.readValue(decryptedPayload, Map.class);
+			String employeeId = decryptedData.get("employeeId");
 
-            // Perform logout
-            userDetailsService.logout(employeeId);
+			// Perform logout
+			userDetailsService.logout(employeeId);
 
-            // Create response message
-            Map<String, String> responseMessage = new HashMap<>();
-            responseMessage.put("message", "Logged out successfully");
+			// Create response message
+			Map<String, String> responseMessage = new HashMap<>();
+			responseMessage.put("message", "Logged out successfully");
 
-            // Encrypt the response
-            String encryptedResponse = encrypt.encrypt(responseMessage, base64Key, base64Iv);
-            response = new ResponseEntity<>(encryptedResponse, HttpStatus.OK);
-        } catch (Exception e) {
-            e.printStackTrace();
-            response = new ResponseEntity<>("Internal Server Error", HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-        return response;
-    }
-	
-	
-	
-	
-	
-	
+			// Encrypt the response
+			String encryptedResponse = encrypt.encrypt(responseMessage, base64Key, base64Iv);
+			response = new ResponseEntity<>(encryptedResponse, HttpStatus.OK);
+		} catch (Exception e) {
+			e.printStackTrace();
+			response = new ResponseEntity<>("Internal Server Error", HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+		return response;
+	}
+
 	@CrossOrigin
 	@PostMapping("/getReport")
 	public ResponseEntity<?> getReport(@RequestBody UserDetails user) {
@@ -620,5 +622,30 @@ public class loginController {
 		return ResponseEntity.ok(imageMap);
 
 	}
+	
+	
+//	@PostMapping("/loginJwt")
+//	public ResponseEntity<?> createToken(@RequestParam String username, @RequestParam String password) {
+//	    try {
+//	        // Authenticate the user
+//	        authenticationManager.authenticate(
+//	            new UsernamePasswordAuthenticationToken(username, password)
+//	        );
+//	 
+//	        // Load user details
+//	        final UserDetails userDetails = userDetailsService.loadUserByUsername(username);
+//	        final String token = jwtUtil.generateToken(userDetails);
+//	 
+//	        // Fetch vendor code (or name, if needed)
+//	        String vendorCode = userDetailsService.getVendorCodeByUsername(username);
+//	 
+//	        // Return JWT token, employee ID, and name
+//	        return ResponseEntity.ok(new JwtResponse(token, userDetails.getName(), vendorCode));
+//	    } catch (AuthenticationException e) {
+//	        // Handle authentication failure
+//	        return ResponseEntity.status(401).body("Authentication failed");
+//	    }
+//	}
+	
 
 }

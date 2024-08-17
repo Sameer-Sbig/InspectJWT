@@ -44,138 +44,233 @@ import com.sbigeneral.LoginCapatchePoc.Service.UserService;
 @EnableWebSecurity
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
-	@Autowired
-	@Lazy
-	private UserDetailsService userdetailsService;
-	@Autowired
-	@Lazy
-	private PasswordEncoder encoder;
-	@Autowired
-	@Lazy
-	private CustomAuthenticationSuccessHandler successHandler;
-	@Autowired
-	@Lazy
-	private CustomAuthenticationFailureHandler failureHandler;
-	@Autowired
-	@Lazy
-	private CustomAuthenticationProvider authenticcationProvider;
-	
-	private final CorsFilter corsfilter;
-	
-	@Autowired
-	public SecurityConfig(CorsFilter corsFilter) {
-		this.corsfilter=corsFilter;
-	}
-
-	
-	
-	
-	
-	
-	
-	
+//	@Autowired
+//	@Lazy
+//	private UserDetailsService userdetailsService;
+//	@Autowired
+//	@Lazy
+//	private PasswordEncoder encoder;
+//	@Autowired
+//	@Lazy
+//	private CustomAuthenticationSuccessHandler successHandler;
+//	@Autowired
+//	@Lazy
+//	private CustomAuthenticationFailureHandler failureHandler;
+//	@Autowired
+//	@Lazy
+//	private CustomAuthenticationProvider authenticcationProvider;
+//	
+//	private final CorsFilter corsfilter;
+//	
+//	@Autowired
+//	public SecurityConfig(CorsFilter corsFilter) {
+//		this.corsfilter=corsFilter;
+//	}
+//
+//	
+//	
+//	
+//	
+//	
+//	
+//	
+////	@Override
+////	protected void configure(HttpSecurity http) throws Exception {
+////		http.headers()
+////      .frameOptions().disable().and().logout().logoutUrl("/logout").invalidateHttpSession(true).clearAuthentication(true)
+////				.deleteCookies("JSESSIONID").permitAll().and().csrf().disable()
+////				 .addFilterBefore(corsfilter, SessionManagementFilter.class) 
+////				.authorizeRequests()
+////				.antMatchers("/", "/index.html", "/login", "/static/**", "/registration", "/forgetpassword",
+////						"/fetchlogin", "/invalidate-session", "/logout", "/is-logged-in")
+////				.permitAll().antMatchers("/changePassword").authenticated().anyRequest().authenticated().and()
+////				.formLogin().loginPage("/login").successHandler(successHandler).failureHandler(failureHandler)
+////				.permitAll().and().sessionManagement()
+////				.maximumSessions(1).maxSessionsPreventsLogin(true).sessionRegistry(sessionRegistry()).and()
+////				.sessionFixation().newSession(); // Disable
+////		//http.addFilterBefore(new XFrameOptionsHeaderFilter(), UsernamePasswordAuthenticationFilter.class);																				// CSRF
+////
+////	}
+//	
+//	
+//	
+////	@Override
+////    protected void configure(HttpSecurity http) throws Exception {
+////        http
+////            .headers()
+////                .frameOptions().deny()  // Ensure this does not conflict with your filter settings
+////                .and()
+////            .logout()
+////                .logoutUrl("/logout")
+////                .invalidateHttpSession(true)
+////                .clearAuthentication(true)
+////                .deleteCookies("JSESSIONID")
+////                .permitAll()
+////                .and()
+////            .csrf().disable()
+////            .authorizeRequests()
+////                .antMatchers("/", "/index.html", "/login", "/static/**", "/registration", "/forgetpassword",
+////                             "/fetchlogin", "/invalidate-session", "/logout", "/is-logged-in")
+////                .permitAll()
+////                .antMatchers("/changePassword").authenticated()
+////                .anyRequest().authenticated()
+////                .and()
+////            .formLogin()
+////                .loginPage("/login")
+////                .permitAll()
+////                .and()
+////            .sessionManagement()
+////                .maximumSessions(1)
+////                .maxSessionsPreventsLogin(false);
+////    }
+////	 
+//	
+//	
+//
+//	
+//	
+//	
 //	@Override
 //	protected void configure(HttpSecurity http) throws Exception {
-//		http.headers()
-//      .frameOptions().disable().and().logout().logoutUrl("/logout").invalidateHttpSession(true).clearAuthentication(true)
-//				.deleteCookies("JSESSIONID").permitAll().and().csrf().disable()
-//				 .addFilterBefore(corsfilter, SessionManagementFilter.class) 
-//				.authorizeRequests()
-//				.antMatchers("/", "/index.html", "/login", "/static/**", "/registration", "/forgetpassword",
-//						"/fetchlogin", "/invalidate-session", "/logout", "/is-logged-in")
-//				.permitAll().antMatchers("/changePassword").authenticated().anyRequest().authenticated().and()
-//				.formLogin().loginPage("/login").successHandler(successHandler).failureHandler(failureHandler)
-//				.permitAll().and().sessionManagement()
+//		http.logout().logoutUrl("/logout").logoutSuccessUrl("/login?logout").invalidateHttpSession(true).deleteCookies("JSESSIONID").and().cors().and()
+//				.headers().frameOptions().sameOrigin().and().csrf().disable().authorizeRequests().and().formLogin()
+//				.loginPage("/login").failureHandler(failureHandler).successHandler(successHandler).permitAll().and()
+//				.authorizeRequests().antMatchers("/forgetpassword/**").permitAll().and().sessionManagement()
 //				.maximumSessions(1).maxSessionsPreventsLogin(true).sessionRegistry(sessionRegistry()).and()
-//				.sessionFixation().newSession(); // Disable
-//		//http.addFilterBefore(new XFrameOptionsHeaderFilter(), UsernamePasswordAuthenticationFilter.class);																				// CSRF
-//
+//				.sessionFixation().newSession();
+//				//http.addFilterBefore(new XFrameOptionsHeaderFilter(), UsernamePasswordAuthenticationFilter.class)
 //	}
-	
-	
-	
-//	@Override
-//    protected void configure(HttpSecurity http) throws Exception {
-//        http
-//            .headers()
-//                .frameOptions().deny()  // Ensure this does not conflict with your filter settings
-//                .and()
-//            .logout()
-//                .logoutUrl("/logout")
-//                .invalidateHttpSession(true)
-//                .clearAuthentication(true)
-//                .deleteCookies("JSESSIONID")
-//                .permitAll()
-//                .and()
-//            .csrf().disable()
-//            .authorizeRequests()
-//                .antMatchers("/", "/index.html", "/login", "/static/**", "/registration", "/forgetpassword",
-//                             "/fetchlogin", "/invalidate-session", "/logout", "/is-logged-in")
-//                .permitAll()
-//                .antMatchers("/changePassword").authenticated()
-//                .anyRequest().authenticated()
-//                .and()
-//            .formLogin()
-//                .loginPage("/login")
-//                .permitAll()
-//                .and()
-//            .sessionManagement()
-//                .maximumSessions(1)
-//                .maxSessionsPreventsLogin(false);
-//    }
+////	}
 //	 
-	
-	
-
-	
-	
-	
-	@Override
-	protected void configure(HttpSecurity http) throws Exception {
-		http.logout().logoutUrl("/logout").logoutSuccessUrl("/login?logout").invalidateHttpSession(true).deleteCookies("JSESSIONID").and().cors().and()
-				.headers().frameOptions().sameOrigin().and().csrf().disable().authorizeRequests().and().formLogin()
-				.loginPage("/login").failureHandler(failureHandler).successHandler(successHandler).permitAll().and()
-				.authorizeRequests().antMatchers("/forgetpassword/**").permitAll().and().sessionManagement()
-				.maximumSessions(1).maxSessionsPreventsLogin(true).sessionRegistry(sessionRegistry()).and()
-				.sessionFixation().newSession();
-				//http.addFilterBefore(new XFrameOptionsHeaderFilter(), UsernamePasswordAuthenticationFilter.class)
-	}
+//	 
+//	 
+//	
+//
+//
+//	@Override
+//	protected void configure(AuthenticationManagerBuilder auth) throws Exception {
+//		auth.authenticationProvider(authenticcationProvider);
 //	}
-	 
-	 
-	 
+//
+//	@Bean
+//	public PasswordEncoder encode() {
+//		return new BCryptPasswordEncoder();
+//	}
+//	 @Bean
+//	    public SessionRegistry sessionRegistry() {
+//	        return new SessionRegistryImpl(); // Create a session registry bean
+//	    }
+//	
+		
 	
-
-
-	@Override
-	protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-		auth.authenticationProvider(authenticcationProvider);
-	}
-
-	@Bean
-	public PasswordEncoder encode() {
-		return new BCryptPasswordEncoder();
-	}
-	 @Bean
-	    public SessionRegistry sessionRegistry() {
-	        return new SessionRegistryImpl(); // Create a session registry bean
-	    }
+	/// new code added 
+	
 	
 		
-	 
+		 @Autowired
+		    @Lazy
+		    private UserDetailsService userDetailsService;
 	
-	 @Bean
-	 public ConcurrentSessionControlAuthenticationStrategy concurrentSessionControlAuthenticationStrategy() {
-	     ConcurrentSessionControlAuthenticationStrategy strategy = new ConcurrentSessionControlAuthenticationStrategy(sessionRegistry());
-	     strategy.setMaximumSessions(1);
-	     return strategy;
-	 }
-
-	 @Bean
-	 public HttpSessionEventPublisher httpSessionEventPublisher() {
-	     return new HttpSessionEventPublisher();
-	 }
-	 
-    
+		    @Autowired
+		    @Lazy
+		    private PasswordEncoder encoder;
+	
+		    @Autowired
+		    @Lazy
+		    private CustomAuthenticationSuccessHandler successHandler;
+	
+		    @Autowired
+		    @Lazy
+		    private CustomAuthenticationFailureHandler failureHandler;
+	
+		    @Autowired
+		    @Lazy
+		    private CustomAuthenticationProvider authenticationProvider;
+	
+		    @Bean
+		    public SessionRegistry sessionRegistry() {
+		        return new SessionRegistryImpl();
+		    }
+	
+	//	    @Bean
+	//	    public ConcurrentSessionControlAuthenticationStrategy concurrentSessionControlAuthenticationStrategy() {
+	//	        ConcurrentSessionControlAuthenticationStrategy strategy = new ConcurrentSessionControlAuthenticationStrategy(sessionRegistry());
+	//	        strategy.setMaximumSessions(1);
+	//	        return strategy;
+	//	    }
+	//
+	//	    @Bean
+	//	    public HttpSessionEventPublisher httpSessionEventPublisher() {
+	//	        return new HttpSessionEventPublisher();
+	//	    }
+	
+		    @Override
+		    protected void configure(HttpSecurity http) throws Exception {
+		        http
+		            .logout()
+		                .logoutUrl("/logout")
+		                .logoutSuccessUrl("/login?logout")
+		                .invalidateHttpSession(true)
+		                .deleteCookies("JSESSIONID")
+		                .permitAll()
+		                .and()
+		            .cors()
+		                .and()
+		            .headers()
+		                .frameOptions().sameOrigin()
+		                .and()
+		            .csrf().disable()
+		            .authorizeRequests()
+		                .antMatchers("/", "/index.html", "/login","/loginpage1", "/static/**", "/registration", "/forgetpassword",
+		                             "/fetchlogin", "/invalidate-session", "/logout", "/is-logged-in")
+		                .permitAll()
+		                .antMatchers("/changePassword").authenticated()
+		                .anyRequest().authenticated()
+		                .and()
+		            .formLogin()
+		                .loginPage("/login")
+		                .successHandler(successHandler)
+		                .failureHandler(failureHandler)
+		                .permitAll()
+		                .and()
+		                .formLogin()
+		                .loginPage("/loginpage1")
+		                .successHandler(successHandler)
+		                .failureHandler(failureHandler)
+		                .permitAll()
+		                .and()
+		            .sessionManagement()
+		                .maximumSessions(1)
+		                .maxSessionsPreventsLogin(true)
+		                .sessionRegistry(sessionRegistry())
+		                .and()
+		                .sessionFixation().newSession();
+		    }
+	
+		    @Override
+		    protected void configure(AuthenticationManagerBuilder auth) throws Exception {
+		        auth.authenticationProvider(authenticationProvider);
+		    }
+	
+		    @Bean
+		    public PasswordEncoder encode() {
+		        return new BCryptPasswordEncoder();
+		    }
+		
+		 
+		
+		 @Bean
+		 public ConcurrentSessionControlAuthenticationStrategy concurrentSessionControlAuthenticationStrategy() {
+		     ConcurrentSessionControlAuthenticationStrategy strategy = new ConcurrentSessionControlAuthenticationStrategy(sessionRegistry());
+		     strategy.setMaximumSessions(1);
+		     return strategy;
+		 }
+	
+		 @Bean
+		 public HttpSessionEventPublisher httpSessionEventPublisher() {
+		     return new HttpSessionEventPublisher();
+		 }
+		 
+	    
 
 }
