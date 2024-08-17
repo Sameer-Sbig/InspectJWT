@@ -430,6 +430,39 @@ public class loginController {
 		return response;
 	}
 	
+	@CrossOrigin
+	@PostMapping("/logoutpage")
+	public ResponseEntity<?> logoutPage(@RequestBody Map<String, String> payload) {
+		String encryptedText = payload.get("encryptedText");
+		String base64Iv = payload.get("base64iv");
+		String base64Key = payload.get("key");
+		ResponseEntity<?> response;
+	
+		try {
+			// Decrypt the payload
+			String decryptedPayload = decryptService.decrypt(encryptedText, base64Iv, base64Key);
+			System.out.println("Decrypted Payload: " + decryptedPayload);
+	
+			// Convert the decrypted JSON string to UserModel
+			UserModel user = objectMapper.readValue(decryptedPayload, UserModel.class);
+	
+			// Get the vendor code (employee ID) and log out the user
+			String vendorCode = user.getEmployeeId();  // Assuming vendorCode is the same as employeeId
+			userDetailsService.logout(vendorCode);  // Call the logout method
+	
+			// Send response indicating successful logout
+			response = new ResponseEntity<>("User logged out", HttpStatus.OK);
+			System.out.println(response);
+	
+		} catch (Exception e) {
+			// Handle exceptions and return appropriate response
+			e.printStackTrace();
+			response = new ResponseEntity<>("Internal Server Error", HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+		System.out.println("Before sending logut response " + response);
+	
+		return response;
+	}
 	
 
 

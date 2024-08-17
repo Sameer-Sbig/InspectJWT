@@ -14,7 +14,6 @@ import com.sbigeneral.LoginCapatchePoc.model.UserModel;
 
 
 
-
 @Service
 public class UserDetailsServiceImpl implements UserDetailsService {
 
@@ -35,7 +34,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 		UserDetails checkLogin = userDetailsRepo.checkLogin(user.getEmployeeId() , user.getPassword());
 		
 		System.out.println("the session count is"  + checkLogin.getSessionCount());
-		// new code
+		// new code very imp
 		if(checkLogin.getSessionCount() > 0) {
 			throw new IllegalStateException("User is already logged in from other session")	;
 			
