@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.FileInputStream;
 import java.io.IOException;
 
+import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import java.io.InputStreamReader;
@@ -69,6 +70,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.HttpServerErrorException;
+import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -579,6 +583,10 @@ public class loginController {
 		return response;
 	}
 
+	
+	
+	
+	
 	@PostMapping("/extraKmRequested")
 	public ResponseEntity<?> extraKmRequestedMethod(@RequestBody ExtraKmModel entity) {
 		// TODO: process POST request
@@ -627,28 +635,90 @@ public class loginController {
 	}
 	
 	
-//	@PostMapping("/loginJwt")
-//	public ResponseEntity<?> createToken(@RequestParam String username, @RequestParam String password) {
-//	    try {
-//	        // Authenticate the user
-//	        authenticationManager.authenticate(
-//	            new UsernamePasswordAuthenticationToken(username, password)
-//	        );
-//	 
-//	        // Load user details
-//	        final UserDetails userDetails = userDetailsService.loadUserByUsername(username);
-//	        final String token = jwtUtil.generateToken(userDetails);
-//	 
-//	        // Fetch vendor code (or name, if needed)
-//	        String vendorCode = userDetailsService.getVendorCodeByUsername(username);
-//	 
-//	        // Return JWT token, employee ID, and name
-//	        return ResponseEntity.ok(new JwtResponse(token, userDetails.getName(), vendorCode));
-//	    } catch (AuthenticationException e) {
-//	        // Handle authentication failure
-//	        return ResponseEntity.status(401).body("Authentication failed");
-//	    }
-//	}
+	@PostMapping("/postWithImage1")
+	public ResponseEntity<?> postWithImage1(@RequestBody UploadImage obj) {
+	    ResponseEntity<?> response;
+	    HttpHeaders headers = new HttpHeaders();
+	    headers.setContentType(MediaType.APPLICATION_JSON);
+
+	    String apiUrl = "https://uat-dil.sbigen.in/services/PINModule/updateCase";
+	    HttpEntity<UploadImage> requestEntity = new HttpEntity<>(obj, headers);
+
+	    try {
+	        ResponseEntity<Map<String, String>> responseEntity = restTemplate.exchange(apiUrl, HttpMethod.POST,
+	                requestEntity, new ParameterizedTypeReference<Map<String, String>>() {});
+
+	        // If the response is successful, return it directly
+	        return new ResponseEntity<>(responseEntity.getBody(), HttpStatus.OK);
+
+	    } catch (HttpClientErrorException e) {
+	        // Parse the error message from the response
+	        String errorBody = e.getResponseBodyAsString();
+	        logger.error("Error response from vendor: {}", errorBody);
+
+	        // Extract the specific fields you need from the errorBody if necessary
+	        Map<String, String> errorResponse = new HashMap<>();
+	        errorResponse.put("message", "Request Already Submitted");
+	        errorResponse.put("pinNumber", obj.getPinNumber());
+	        errorResponse.put("statusCode", "400");
+
+	        // Return a custom response with the necessary fields
+	        return new ResponseEntity<>(errorResponse, HttpStatus.ALREADY_REPORTED);
+
+	    } catch (Exception e) {
+	        // Handle any other exceptions and return an internal server error
+	        logger.error("Internal Server Error: {}", e.getMessage());
+	        Map<String, String> errorResponse = new HashMap<>();
+	        errorResponse.put("message", "Internal Server Error");
+	        errorResponse.put("pinNumber", obj.getPinNumber());
+	        errorResponse.put("statusCode", "500");
+
+	        return new ResponseEntity<>(errorResponse, HttpStatus.INTERNAL_SERVER_ERROR);
+	    }
+	}
+
+	@PostMapping("/extraKmRequested1")
+	public ResponseEntity<?> extraKmRequestedMethod1(@RequestBody ExtraKmModel entity) {
+		System.out.println(entity);
+		
+	    String apiUrl = "https://uat-dil.sbigen.in/services/PINModule/ExtraKMRequest";
+	    HttpHeaders headers = new HttpHeaders();
+	    headers.setContentType(MediaType.APPLICATION_JSON);
+	    HttpEntity<ExtraKmModel> requestEntity = new HttpEntity<>(entity, headers);
+
+	    try {
+	        ResponseEntity<Map<String, String>> responseEntity = restTemplate.exchange(apiUrl, HttpMethod.POST,
+	                requestEntity, new ParameterizedTypeReference<Map<String, String>>() {});
+
+	        // If the response is successful, return it directly
+	        return new ResponseEntity<>(responseEntity.getBody(), HttpStatus.OK);
+
+	    } catch (HttpClientErrorException e) {
+	        // Parse the error message from the response
+	        String errorBody = e.getResponseBodyAsString();
+	        logger.error("Error response from vendor: {}", errorBody);
+
+	        // Extract the specific fields you need from the errorBody if necessary
+	        Map<String, String> errorResponse = new HashMap<>();
+	        errorResponse.put("message", "Request Already Submitted");
+	        errorResponse.put("pinNumber", entity.getPinNumber());
+	        errorResponse.put("statusCode", "400");
+
+	        // Return a custom response with the necessary fields
+	        return new ResponseEntity<>(errorResponse, HttpStatus.ALREADY_REPORTED);
+
+	    } catch (Exception e) {
+	        // Handle any other exceptions and return an internal server error
+	        logger.error("Internal Server Error: {}", e.getMessage());
+	        Map<String, String> errorResponse = new HashMap<>();
+	        errorResponse.put("message", "Internal Server Error");
+	        errorResponse.put("pinNumber", entity.getPinNumber());
+	        errorResponse.put("statusCode", "500");
+
+	        return new ResponseEntity<>(errorResponse, HttpStatus.INTERNAL_SERVER_ERROR);
+	    }
+	}
+
 	
 
 }

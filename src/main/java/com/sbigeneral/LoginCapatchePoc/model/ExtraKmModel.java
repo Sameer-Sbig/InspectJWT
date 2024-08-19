@@ -14,5 +14,37 @@ public class ExtraKmModel {
 
     @JsonProperty("requestedKM")
     private String requestedKm;
+
+	public String getPinNumber() {
+		return pinNumber;
+	}
+
+	public void setPinNumber(String pinNumber) {
+		this.pinNumber = pinNumber;
+	}
+
+	public String getDecision() {
+		return decision;
+	}
+
+	public void setDecision(String decision) {
+		this.decision = decision;
+	}
+
+	public String getRemarks() {
+		return remarks;
+	}
+
+	public void setRemarks(String remarks) {
+		this.remarks = remarks;
+	}
+
+	public String getRequestedKm() {
+		return requestedKm;
+	}
+
+	public void setRequestedKm(String requestedKm) {
+		this.requestedKm = requestedKm;
+	}
     
 }
