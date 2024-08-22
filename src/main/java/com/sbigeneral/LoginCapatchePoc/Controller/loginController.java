@@ -76,7 +76,7 @@ import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-
+import com.itextpdf.text.log.SysoLogger;
 import com.sbigeneral.LoginCapatchePoc.Entity.AgreementCodeEntity;
 import com.sbigeneral.LoginCapatchePoc.Entity.CustomeIdGenerator;
 import com.sbigeneral.LoginCapatchePoc.Entity.PinDetails;
@@ -94,9 +94,11 @@ import com.sbigeneral.LoginCapatchePoc.Service.UserService;
 //import com.sbigeneral.LoginCapatchePoc.ServiceImpl.CustomUserDetailsService;
 import com.sbigeneral.LoginCapatchePoc.Utill.CaptchaUtils;
 import com.sbigeneral.LoginCapatchePoc.Utill.EmailSender;
+import com.sbigeneral.LoginCapatchePoc.Utill.FormValidation;
 import com.sbigeneral.LoginCapatchePoc.Utill.GCMUtilty;
 import com.sbigeneral.LoginCapatchePoc.Utill.JwtUtil;
 import com.sbigeneral.LoginCapatchePoc.Utill.UserSessionService;
+
 import com.sbigeneral.LoginCapatchePoc.config.WebLogicConfig;
 import com.sbigeneral.LoginCapatchePoc.model.ChangePasswordRequest;
 import com.sbigeneral.LoginCapatchePoc.model.ExtraKmModel;
@@ -145,6 +147,9 @@ public class loginController {
 	private Encrypt encrypt;
 
 	private String loginPageImage;
+	
+	@Autowired
+	private FormValidation validation;
 
 //	@Autowired
 //	private AuthenticationManager authenticationManager;
@@ -637,7 +642,25 @@ public class loginController {
 	
 	@PostMapping("/postWithImage1")
 	public ResponseEntity<?> postWithImage1(@RequestBody UploadImage obj) {
+		System.out.println(obj);
 	    ResponseEntity<?> response;
+	    System.out.println(obj.getRemarks());
+	    boolean valid = validation.checkSpecialChars(obj.getRemarks());
+	    
+	    if(valid == false) {
+	    	logger.error("Special characters found in request");
+
+	        // Extract the specific fields you need from the errorBody if necessary
+	        Map<String, String> errorResponse = new HashMap<>();
+	        errorResponse.put("message", "Special Characters found in remarks field");
+	        errorResponse.put("pinNumber", obj.getPinNumber());
+	        errorResponse.put("statusCode", "406");
+
+	        // Return a custom response with the necessary fields
+	        return new ResponseEntity<>(errorResponse, HttpStatus.NOT_ACCEPTABLE);
+	    	
+	    }
+	    
 	    HttpHeaders headers = new HttpHeaders();
 	    headers.setContentType(MediaType.APPLICATION_JSON);
 

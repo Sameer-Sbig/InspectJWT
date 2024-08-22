@@ -99,9 +99,11 @@ public class ApiServiceImpl implements ApiService {
 
 	@Override
 	public String getLoginImage() {
+		
+		//uat path == /u02/Oracle/Middleware/Oracle_Home/user_projects/domains/base_domain
 		String loginPage = "";
 			try {
-			loginPage = new String(Files.readAllBytes(Paths.get("/u02/Oracle/Middleware/Oracle_Home/user_projects/domains/base_domain/login.txt")));
+			loginPage = new String(Files.readAllBytes(Paths.get("/u01/Oracle/Middleware/Oracle_Home/user_projects/domains/base_domain/Sameer/login.txt")));
 			System.out.println(loginPage);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
