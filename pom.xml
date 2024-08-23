@@ -10,11 +10,11 @@
 		<relativePath /> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>com.sbig</groupId>
-	<artifactId>BMS</artifactId>
+	<artifactId>InspectJWT</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<packaging>war</packaging>
-	<name>BMS</name>
-	<description>BMS</description>
+	<name>InspectJWT</name>
+	<description>InspectJWT</description>
 	<properties>
 		<java.version>1.8</java.version>
 		<log4j2.version>2.11.0</log4j2.version>
@@ -175,10 +175,37 @@
 			<artifactId>BreakinInspect</artifactId>
 			<version>0.0.1-SNAPSHOT</version>
 		</dependency>-->
+		<dependency>
+			<groupId>io.jsonwebtoken</groupId>
+			<artifactId>jjwt</artifactId>
+			<version>0.9.1</version>
+		</dependency>
+		<!--<dependency>
+			<groupId>in.sbigeneral.breakin.breakinInspect</groupId>
+			<artifactId>BreakinInspect</artifactId>
+			<version>0.0.1-SNAPSHOT</version>
+		</dependency>-->
+		<dependency>
+			<groupId>io.jsonwebtoken</groupId>
+			<artifactId>jjwt-api</artifactId>
+			<version>0.11.5</version>
+		</dependency>
+		<dependency>
+			<groupId>io.jsonwebtoken</groupId>
+			<artifactId>jjwt-impl</artifactId>
+			<version>0.11.5</version>
+			<scope>runtime</scope>
+		</dependency>
+		<dependency>
+			<groupId>io.jsonwebtoken</groupId>
+			<artifactId>jjwt-jackson</artifactId>
+			<version>0.11.5</version>
+			<scope>runtime</scope>
+		</dependency>
 
 	</dependencies>
 	<build>
-		<finalName>BMS</finalName>
+		<finalName>InspectJWT</finalName>
 		<plugins>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>

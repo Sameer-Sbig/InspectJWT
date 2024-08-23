@@ -1,167 +1,135 @@
 package com.sbigeneral.LoginCapatchePoc.Utill;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.web.servlet.FilterRegistrationBean;
-import org.springframework.boot.web.servlet.server.CookieSameSiteSupplier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Lazy;
-import org.springframework.http.HttpStatus;
-import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.core.session.SessionRegistry;
-import org.springframework.security.core.session.SessionRegistryImpl;
-import org.springframework.security.core.userdetails.User;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import org.springframework.security.web.authentication.session.ConcurrentSessionControlAuthenticationStrategy;
-import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
-import org.springframework.security.web.csrf.CsrfTokenRepository;
-import org.springframework.security.web.csrf.HttpSessionCsrfTokenRepository;
-import org.springframework.security.web.session.HttpSessionEventPublisher;
-import org.springframework.security.web.session.SessionManagementFilter;
-import org.springframework.web.cors.CorsConfiguration;
-import org.springframework.web.cors.CorsConfigurationSource;
-import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
-import org.springframework.web.filter.CorsFilter;
-import org.springframework.web.servlet.config.annotation.CorsRegistry;
-import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
-import com.sbigeneral.LoginCapatchePoc.Service.UserService;
+import com.sbigeneral.LoginCapatchePoc.Service.UserDetailsServiceImpl;
+import com.sbigeneral.LoginCapatchePoc.filter.JwtAuthenticationFilter;
+
+
 
 @Configuration
 @EnableWebSecurity
-public class SecurityConfig extends WebSecurityConfigurerAdapter {
+public class SecurityConfig {
 
-	@Autowired
-	@Lazy
-	private UserDetailsService userdetailsService;
-	@Autowired
-	@Lazy
-	private PasswordEncoder encoder;
-	@Autowired
-	@Lazy
-	private CustomAuthenticationSuccessHandler successHandler;
-	@Autowired
-	@Lazy
-	private CustomAuthenticationFailureHandler failureHandler;
-	@Autowired
-	@Lazy
-	private CustomAuthenticationProvider authenticcationProvider;
-	
-	private final CorsFilter corsfilter;
-	
-	@Autowired
-	public SecurityConfig(CorsFilter corsFilter) {
-		this.corsfilter=corsFilter;
-	}
+	private UserDetailsServiceImpl userDetailsServiceImpl;
+	private JwtAuthenticationFilter jwtAuthenticationFilter;
 
-	
-	
-	
-	
-	
-	
-	
-//	@Override
-//	protected void configure(HttpSecurity http) throws Exception {
-//		http.headers()
-//      .frameOptions().disable().and().logout().logoutUrl("/logout").invalidateHttpSession(true).clearAuthentication(true)
-//				.deleteCookies("JSESSIONID").permitAll().and().csrf().disable()
-//				 .addFilterBefore(corsfilter, SessionManagementFilter.class) 
-//				.authorizeRequests()
-//				.antMatchers("/", "/index.html", "/login", "/static/**", "/registration", "/forgetpassword",
-//						"/fetchlogin", "/invalidate-session", "/logout", "/is-logged-in")
-//				.permitAll().antMatchers("/changePassword").authenticated().anyRequest().authenticated().and()
-//				.formLogin().loginPage("/login").successHandler(successHandler).failureHandler(failureHandler)
-//				.permitAll().and().sessionManagement()
-//				.maximumSessions(1).maxSessionsPreventsLogin(true).sessionRegistry(sessionRegistry()).and()
-//				.sessionFixation().newSession(); // Disable
-//		//http.addFilterBefore(new XFrameOptionsHeaderFilter(), UsernamePasswordAuthenticationFilter.class);																				// CSRF
-//
-//	}
-	
-	
-	
-//	@Override
-//    protected void configure(HttpSecurity http) throws Exception {
-//        http
-//            .headers()
-//                .frameOptions().deny()  // Ensure this does not conflict with your filter settings
-//                .and()
-//            .logout()
-//                .logoutUrl("/logout")
-//                .invalidateHttpSession(true)
-//                .clearAuthentication(true)
-//                .deleteCookies("JSESSIONID")
-//                .permitAll()
-//                .and()
-//            .csrf().disable()
-//            .authorizeRequests()
-//                .antMatchers("/", "/index.html", "/login", "/static/**", "/registration", "/forgetpassword",
-//                             "/fetchlogin", "/invalidate-session", "/logout", "/is-logged-in")
-//                .permitAll()
-//                .antMatchers("/changePassword").authenticated()
-//                .anyRequest().authenticated()
-//                .and()
-//            .formLogin()
-//                .loginPage("/login")
-//                .permitAll()
-//                .and()
-//            .sessionManagement()
-//                .maximumSessions(1)
-//                .maxSessionsPreventsLogin(false);
-//    }
-//	 
-	
-	
-
-	
-	
-	
-	@Override
-	protected void configure(HttpSecurity http) throws Exception {
-		http.logout().logoutUrl("/logout").logoutSuccessUrl("/login?logout").invalidateHttpSession(true).deleteCookies("JSESSIONID").and().cors().and()
-				.headers().frameOptions().sameOrigin().and().csrf().disable().authorizeRequests().and().formLogin()
-				.loginPage("/login").failureHandler(failureHandler).successHandler(successHandler).permitAll().and()
-				.authorizeRequests().antMatchers("/forgetpassword/**").permitAll().and().sessionManagement()
-				.maximumSessions(1).maxSessionsPreventsLogin(true).sessionRegistry(sessionRegistry()).and()
-				.sessionFixation().newSession();
-				//http.addFilterBefore(new XFrameOptionsHeaderFilter(), UsernamePasswordAuthenticationFilter.class)
-	}
-//	}
-	 
-	 
-	 
-	
-
-
-	@Override
-	protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-		auth.authenticationProvider(authenticcationProvider);
+	public SecurityConfig(UserDetailsServiceImpl userDetailsServiceImpl,
+			JwtAuthenticationFilter jwtAuthenticationFilter) {
+		this.userDetailsServiceImpl = userDetailsServiceImpl;
+		this.jwtAuthenticationFilter = jwtAuthenticationFilter;
 	}
 
 	@Bean
-	public PasswordEncoder encode() {
+	public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+		return http.csrf(AbstractHttpConfigurer::disable)
+				.authorizeHttpRequests(req -> req.antMatchers("/login1/**", "/register/**", "/breakin/**").permitAll()
+						.anyRequest().authenticated())
+				.userDetailsService(userDetailsServiceImpl)
+				.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+				
+				  .addFilterBefore(jwtAuthenticationFilter,
+				  UsernamePasswordAuthenticationFilter.class)
+				 
+				.build();
+	}
+
+	@Bean
+	public PasswordEncoder passwordEncoder() {
 		return new BCryptPasswordEncoder();
 	}
-	 @Bean
-	    public SessionRegistry sessionRegistry() {
-	        return new SessionRegistryImpl(); // Create a session registry bean
-	    }
-	
-		
-	
-	
+
+	@Bean
+	public AuthenticationManager authenticationManager(AuthenticationConfiguration configuration) throws Exception {
+		return configuration.getAuthenticationManager();
+	}
 }
+
+
+
+
+// package com.sbigeneral.LoginCapatchePoc.Utill;
+
+// import org.springframework.context.annotation.Bean;
+// import org.springframework.context.annotation.Configuration;
+// import org.springframework.security.authentication.AuthenticationManager;
+// import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
+// import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+// import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+// import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+// import org.springframework.security.config.http.SessionCreationPolicy;
+// import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+// import org.springframework.security.crypto.password.PasswordEncoder;
+// import org.springframework.security.web.SecurityFilterChain;
+// import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+// import org.springframework.security.web.session.HttpSessionEventPublisher;
+
+// import com.sbigeneral.LoginCapatchePoc.Service.UserDetailsServiceImpl;
+// import com.sbigeneral.LoginCapatchePoc.filter.JwtAuthenticationFilter;
+
+// @Configuration
+// @EnableWebSecurity
+// public class SecurityConfig {
+
+// 	private final UserDetailsServiceImpl userDetailsServiceImpl;
+// 	private final JwtAuthenticationFilter jwtAuthenticationFilter;
+
+// 	public SecurityConfig(UserDetailsServiceImpl userDetailsServiceImpl,
+// 			JwtAuthenticationFilter jwtAuthenticationFilter) {
+// 		this.userDetailsServiceImpl = userDetailsServiceImpl;
+// 		this.jwtAuthenticationFilter = jwtAuthenticationFilter;
+// 	}
+
+// 	@Bean
+// 	public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+// 		http.csrf(AbstractHttpConfigurer::disable)
+// 				.authorizeHttpRequests(req -> req.antMatchers("/login1/**", "/register/**", "/breakin/**").permitAll()
+// 						.anyRequest().authenticated())
+// 				.userDetailsService(userDetailsServiceImpl)
+// 				.sessionManagement(session -> session
+// 						.sessionCreationPolicy(SessionCreationPolicy.ALWAYS)  // Always create a session
+// 						.maximumSessions(1)  // Ensure only one session per user
+// 						.maxSessionsPreventsLogin(true) // Prevents new login if session exists
+// 						.expiredUrl("/session-expired"))  // Redirect to this URL when session expires
+// 				.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
+
+// 		http.sessionManagement()
+// 				.sessionCreationPolicy(SessionCreationPolicy.ALWAYS)
+// 				.maximumSessions(1)
+// 				.maxSessionsPreventsLogin(true)
+// 				.expiredUrl("/session-expired");
+		
+// 		http.sessionManagement()
+// 			.sessionFixation().migrateSession()
+// 			.invalidSessionUrl("/session-invalid");
+
+// 		return http.build();
+// 	}
+
+// 	@Bean
+// 	public PasswordEncoder passwordEncoder() {
+// 		return new BCryptPasswordEncoder();
+// 	}
+
+// 	@Bean
+// 	public AuthenticationManager authenticationManager(AuthenticationConfiguration configuration) throws Exception {
+// 		return configuration.getAuthenticationManager();
+// 	}
+	
+// 	@Bean
+// 	public HttpSessionEventPublisher httpSessionEventPublisher() {
+// 		return new HttpSessionEventPublisher();
+// 	}
+// }
+

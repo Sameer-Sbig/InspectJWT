@@ -21,14 +21,14 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
-import com.sbigeneral.LoginCapatchePoc.Controller.loginController;
+import com.sbigeneral.LoginCapatchePoc.Controller.DemoController;
 import com.sbigeneral.LoginCapatchePoc.Entity.PinDetails;
 import com.sbigeneral.LoginCapatchePoc.Service.ApiService;
 
 @Service
 public class ApiServiceImpl implements ApiService {
 
-    private static final Logger logger = LogManager.getLogger(loginController.class);
+    private static final Logger logger = LogManager.getLogger(DemoController.class);
 
 
 
